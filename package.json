@@ -1,0 +1,27 @@
+{
+  "name": "runout.io",
+  "version": "1.0.0",
+  "description": "Web Multiplayer Platformer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd ./front/react-app && npm run build",
+    "start": "npm run build && nodemon app",
+    "prod": "npm run build && pm2 start app.js",
+    "stop": "pm2 stop app.js && pm2 delete app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kozlown/runout.io.git"
+  },
+  "author": "Nigel Kozlowski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kozlown/runout.io/issues"
+  },
+  "homepage": "https://github.com/kozlown/runout.io#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "node-sass": "^4.3.0"
+  }
+}

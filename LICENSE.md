@@ -1,2 +1,1 @@
-
-Copyright (C) 2017 Nigelk
+Copyright (C) 2017 Nigel Kozlowski
