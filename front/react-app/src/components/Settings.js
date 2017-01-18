@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import './stylesheet/Settings.sass';
 
 class Settings extends Component {
     render() {
+        let display = this.props.state.Menu.panel === 'Settings' ? 'visible' : 'hidden'
+
         return (
-            <div className="Settings">
-                <p>Settings</p>
+            <div className={ "Settings "+ display }>
+
             </div>
         );
     }

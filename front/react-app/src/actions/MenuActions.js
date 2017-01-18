@@ -9,29 +9,11 @@ export function toggle_menu() {
     }
 }
 
-export function go_settings_panel() {
+export function go_panel(panel) {
     return {
         type: types.GO_PANEL,
         data: {
-            panel: 'settings'
-        }
-    }
-}
-
-export function go_servers_panel() {
-    return {
-        type: types.GO_PANEL,
-        data: {
-            panel: 'servers'
-        }
-    }
-}
-
-export function go_profile_panel() {
-    return {
-        type: types.GO_PANEL,
-        data: {
-            panel: 'profile'
+            panel: panel
         }
     }
 }
