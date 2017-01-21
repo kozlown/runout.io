@@ -2,7 +2,7 @@
  * Configs for the whole app
  */
 
-let configs = {
+const configs = {
 	port        : 3000,
 	front       : require('./front/configs.js'),
 	api         : require('./api/configs.js'),

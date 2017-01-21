@@ -1,10 +1,10 @@
-let configs      = require('./configs')
-express          = require('express')
-let app          = express()
+const configs               = require('./configs')
+express                     = require('express')
+const app                   = express()
 
-let api          = require('./api/index')
-let front        = require('./front/index')
-let games_router = require('./games_router/index')
+let api                     = require('./api/index')
+let front                   = require('./front/index')
+let games_router            = require('./games_router/index')
 
 
 app.use('/api', api.router)
