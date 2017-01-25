@@ -1,17 +1,24 @@
-const configs               = require('./configs')
-express                     = require('express')
-const app                   = express()
+// global configuration
+const config          = require('./config')
 
-let api                     = require('./api/index')
-let front                   = require('./front/index')
-let games_router            = require('./games_router/index')
+// Express server
+express          = require('express')
+const app        = express()
+
+// API
+let api          = require('./api/index')
+
+// Website Frontend
+let front        = require('./front/index')
+
+// Games Router
+let games_router = require('./games_router/index')
 
 
 app.use('/api', api.router)
 app.use('/app', front.router)
 //app.use(games_router.router)
 
-
-app.listen(configs.port, () => {
-	console.log(`Server now listening on port ${ configs.port }.`)
+app.listen(config.port, () => {
+	console.log(`Server now listening on port ${ config.port }.`)
 })
