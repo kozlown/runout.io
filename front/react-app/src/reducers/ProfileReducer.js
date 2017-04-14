@@ -9,7 +9,6 @@ const ProfileReducer = (state = initialState, action) => {
     switch (action.type) {
 
         case types.CHANGE_PSEUDO :
-
             return {
                 ...state,
                 pseudo: action.data.pseudo

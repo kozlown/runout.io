@@ -1,5 +1,7 @@
 import { connect }      from 'react-redux'
 
+import * as AppActions    from '../actions/AppActions'
+
 import App              from '../components/App'
 
 const mapStateToProps = (state) => {
@@ -12,7 +14,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        change_pseudo: (pseudo) => {
+            return () => {
+                dispatch(AppActions.change_pseudo(pseudo))
+            }
+        }
     }
 }
 
