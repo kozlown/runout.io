@@ -1,4 +1,10 @@
 /**
+ * APP
+ */
+
+export const CHANGE_REAL_NAME = 'CHANGE_REAL_NAME';
+
+/**
 * MENU
 */
 

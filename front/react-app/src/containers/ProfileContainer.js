@@ -16,6 +16,11 @@ const mapDispatchToProps = (dispatch) => {
             return () => {
                 dispatch(ProfileActions.change_pseudo(pseudo))
             }
+        },
+        change_real_name: (realName) => {
+            return () => {
+                dispatch(ProfileActions.change_real_name(realName))
+            }
         }
     }
 }

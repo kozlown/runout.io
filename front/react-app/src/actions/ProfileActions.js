@@ -8,3 +8,12 @@ export function change_pseudo(pseudo) {
         }
     }
 }
+
+export function change_real_name(realName) {
+    return {
+        type: types.CHANGE_REAL_NAME,
+        data: {
+            realName: realName
+        }
+    }
+}
