@@ -11,10 +11,10 @@ class Layer extends Component {
         }
     }
     componentWillReceiveProps(nextProps){
-        this.state = {
+        this.setState({
             layer: nextProps.layer,
             visible: nextProps.enabled
-        }
+        })
     }
     render() {
         const style = {

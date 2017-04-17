@@ -8,9 +8,21 @@ class Map extends Component {
             position: props.position
         }
     }
+    componentDidMount() {
+        const handleMouseMove = (e) => {
+            if (this.props.state.Menu.visible) {
+                const position = {
+                    x: -e.clientX / 2 + window.innerWidth / 2,
+                    y: -e.clientY / 2 + window.innerHeight / 2
+                }
+                this.props.set_map_position(position)()
+            }
+        }
+        window.onmousemove = handleMouseMove
+    }
     componentWillReceiveProps(nextProps) {
         this.setState({
-            position: nextProps.position
+            position: nextProps.state.Map.position
         })
     }
     getLayers() {
