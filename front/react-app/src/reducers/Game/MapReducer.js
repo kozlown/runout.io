@@ -34,6 +34,12 @@ const initialState = {
 const MapReducer = (state = initialState, action) => {
 
     switch (action.type) {
+        case types.SET_MAP_POSITION :
+
+            return {
+                ...state,
+                position: action.data.position
+            }
 
         case types.LOAD_MAP :
 
@@ -41,6 +47,7 @@ const MapReducer = (state = initialState, action) => {
                 ...state,
                 map: action.data.map
             }
+
         default:
 
             return state

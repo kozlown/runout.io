@@ -5,27 +5,27 @@ class Tile extends Component {
         super(props)
 
         this.state = {
+            id: props.id,
             tileset: {
                 url: props.tileset.url
             },
             position: props.position,
             column: props.column,
             line: props.line,
-            key: props.key,
             active: props.active
         }
     }
     componentWillReceiveProps(nextProps){
-        this.state = {
+        this.setState({
+            id: nextProps.id,
             tileset: {
                 url: nextProps.tileset.url
             },
             position: nextProps.position,
             column: nextProps.column,
             line: nextProps.line,
-            key: nextProps.key,
             active: nextProps.active
-        }
+        })
     }
     render() {
         const style = {
@@ -39,7 +39,7 @@ class Tile extends Component {
         return (
             <div className="Tile" style={style} key={this.state.key}  >
                 <span>
-                    Tile n°{this.state.key}
+                    Tile n°{this.state.id}
                 </span>
             </div>
         );

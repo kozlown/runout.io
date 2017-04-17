@@ -69,7 +69,7 @@ class Servers extends Component {
                 <div className="list">
                     { servers }
                 </div>
-                <div className="play" ><p>GO !</p></div>
+                <div className="play" onClick={ this.props.toggle_menu() }><p>GO !</p></div>
             </div>
         );
     }

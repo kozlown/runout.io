@@ -16,7 +16,12 @@ const mapDispatchToProps = (dispatch) => {
             return () => {
                 dispatch(ServersActions.loadMap(key))
             }
-        }
+        },
+        toggle_menu: () => {
+            return () => {
+                dispatch(ServersActions.toggle_menu())
+            }
+        },
     }
 }
 

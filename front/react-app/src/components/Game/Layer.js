@@ -30,6 +30,7 @@ class Layer extends Component {
             tilesComponents.push(
                 <TileContainer
                     key={i}
+                    id={i}
                     position={tile.position}
                     column={tile.column}
                     line={tile.line}

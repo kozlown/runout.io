@@ -8,3 +8,10 @@ export function loadMap(map) {
         }
     }
 }
+
+export function toggle_menu() {
+    return {
+        type: types.TOGGLE_MENU,
+        data: {}
+    }
+}
