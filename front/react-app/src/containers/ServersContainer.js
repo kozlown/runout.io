@@ -1,5 +1,7 @@
 import { connect }      from 'react-redux'
 
+import * as ServersActions    from '../actions/ServersActions'
+
 import Servers              from '../components/Servers'
 
 const mapStateToProps = (state) => {
@@ -10,7 +12,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-
+        loadMap: (key) => {
+            return () => {
+                dispatch(ServersActions.loadMap(key))
+            }
+        }
     }
 }
 
