@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import MenuContainer from '../containers/MenuContainer'
-import GameContainer from '../containers/Game/GameContainer'
+import GameContainer from '../containers/GameContainer'
 
 class App extends Component {
     render() {
