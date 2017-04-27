@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Input from './tools/Input'
 import { FacebookLogin } from 'react-facebook-login-component'
 
-class Profile extends Component {
+class ProfileComponent extends Component {
     render() {
         let display = this.props.state.Menu.panel === 'Profile' ? 'visible' : 'hidden'
 
@@ -62,4 +62,4 @@ class Profile extends Component {
     }
 }
 
-export default Profile;
+export default ProfileComponent;

@@ -2,7 +2,7 @@ import { connect }      from 'react-redux'
 
 import * as ServersActions    from '../actions/ServersActions'
 
-import Servers              from '../components/Servers'
+import Servers              from '../components/ServersComponent'
 
 const mapStateToProps = (state) => {
     return {

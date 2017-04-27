@@ -1,5 +1,5 @@
 import { connect }      from 'react-redux'
-import Game              from '../components/Game'
+import Game              from '../components/GameComponent'
 
 const mapStateToProps = (state) => {
     return {

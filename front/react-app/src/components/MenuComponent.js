@@ -3,7 +3,7 @@ import SettingsContainer from '../containers/SettingsContainer'
 import ServersContainer from '../containers/ServersContainer'
 import ProfileContainer from '../containers/ProfileContainer'
 
-class Menu extends Component {
+class MenuComponent extends Component {
     componentDidMount() {
         const handleEscape = (e) => {
             if (e.keyCode === 27) this.props.toggle_menu()()
@@ -45,4 +45,4 @@ class Menu extends Component {
     }
 }
 
-export default Menu;
+export default MenuComponent;

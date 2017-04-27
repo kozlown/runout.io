@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Servers extends Component {
+class ServersComponent extends Component {
     render() {
         const stateServers = this.props.state.Servers
         let servers = []
@@ -75,4 +75,4 @@ class Servers extends Component {
     }
 }
 
-export default Servers;
+export default ServersComponent

@@ -2,7 +2,7 @@ import { connect }      from 'react-redux'
 
 import * as ProfileActions    from '../actions/ProfileActions'
 
-import Profile              from '../components/Profile'
+import Profile              from '../components/ProfileComponent'
 
 const mapStateToProps = (state) => {
     return {
