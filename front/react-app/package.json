@@ -49,6 +49,8 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "lodash": "^4.17.4",
+    "pixi.js": "^4.5.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-facebook-login-component": "^0.6.0",
