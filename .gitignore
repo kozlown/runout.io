@@ -32,3 +32,4 @@ node_modules
 
 # react build
 front/react-app/build/*
+front/react-app/firefox_root
