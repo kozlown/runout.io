@@ -29,3 +29,7 @@ node_modules
 
 # Jetbrain idea
 .idea
+
+# react build
+front/react-app/build/*
+front/react-app/firefox_root

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Settings extends Component {
+class SettingsComponent extends Component {
     render() {
         let display = this.props.state.Menu.panel === 'Settings' ? 'visible' : 'hidden'
 
@@ -12,4 +12,4 @@ class Settings extends Component {
     }
 }
 
-export default Settings;
+export default SettingsComponent;

@@ -5,6 +5,7 @@ import MenuReducer from './MenuReducer'
 import ProfileReducer from './ProfileReducer'
 import ServersReducer from './ServersReducer'
 import SettingsReducer from './SettingsReducer'
+import GameReducer from './GameReducer'
 
 
 const allReducers = combineReducers({
@@ -12,7 +13,8 @@ const allReducers = combineReducers({
     Menu     : MenuReducer,
     Profile  : ProfileReducer,
     Servers  : ServersReducer,
-    Settings : SettingsReducer
+    Settings : SettingsReducer,
+    Game     : GameReducer
 })
 
 export default allReducers

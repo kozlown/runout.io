@@ -2,7 +2,7 @@ import { connect }      from 'react-redux'
 
 import * as ProfileActions    from '../actions/ProfileActions'
 
-import Profile              from '../components/Profile'
+import Profile              from '../components/ProfileComponent'
 
 const mapStateToProps = (state) => {
     return {
@@ -15,6 +15,11 @@ const mapDispatchToProps = (dispatch) => {
         change_pseudo: (pseudo) => {
             return () => {
                 dispatch(ProfileActions.change_pseudo(pseudo))
+            }
+        },
+        change_real_name: (realName) => {
+            return () => {
+                dispatch(ProfileActions.change_real_name(realName))
             }
         }
     }

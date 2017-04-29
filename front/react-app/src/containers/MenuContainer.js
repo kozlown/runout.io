@@ -2,7 +2,7 @@ import { connect }      from 'react-redux'
 
 import * as MenuActions    from '../actions/MenuActions'
 
-import Menu              from '../components/Menu'
+import Menu              from '../components/MenuComponent'
 
 const mapStateToProps = (state) => {
     return {
