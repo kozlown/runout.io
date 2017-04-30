@@ -1,6 +1,6 @@
-const express = require('express')
+import express from 'express'
+
 const router = express.Router()
+router.use(express.static('front/react-app/build'))
 
-router.use(express.static(__dirname + '/react-app/build'))
-
-module.exports = router;
+export default router

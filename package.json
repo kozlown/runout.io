@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "cd ./front/react-app && npm run build",
+    "build": "webpack && cd ./front/react-app && npm run build",
     "webpack": "cd ./front/react-app && npm run start",
-    "start": "npm run build && nodemon app",
+    "start": "npm run build && nodemon bin/bundle",
     "prod": "npm run build && pm2 start app.js",
     "stop": "pm2 stop app.js && pm2 delete app.js"
   },
@@ -41,9 +41,10 @@
     "graphql": "^0.9.1",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.22",
-    "webpack": "^2.4.1",
+    "mysql": "^2.13.0",
     "node-sass": "^4.3.0",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "webpack": "^2.4.1"
   },
   "devDependencies": {}
 }

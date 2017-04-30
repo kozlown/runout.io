@@ -4,6 +4,12 @@
 
 const config = {
     port: 3000,
+    database: {
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'runout.io'
+    }
 }
 
-module.exports = config
+export default config
