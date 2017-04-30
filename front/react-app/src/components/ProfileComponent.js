@@ -1,20 +1,29 @@
-import React, { Component } from 'react';
-import Input from './tools/Input'
+import React, { Component } from 'react'
 import { FacebookLogin } from 'react-facebook-login-component'
+import Input from './tools/Input'
 
 class ProfileComponent extends Component {
     render() {
-        let display = this.props.state.Menu.panel === 'Profile' ? 'visible' : 'hidden'
+        const display = this.props.state.Menu.panel === 'Profile' ? 'visible' : 'hidden'
 
         const handleFacebookResponse = (response) => {
-            if(this.props.state.Profile.pseudo === "Guest") {
+            const req = new XMLHttpRequest()
+            req.open('GET', `https://graph.facebook.com/me?access_token=${response.accessToken}`, false)
+            req.send(null)
+
+            if (req.status === 200) {
+                console.info(req.responseText)
+            } else {
+                console.info('Status de la réponse: %d (%s)', req.status, req.statusText)
+            }
+            if (this.props.state.Profile.pseudo === 'Guest') {
                 this.props.change_pseudo(response.name)()
             }
             this.props.change_real_name(response.name)()
         }
 
         const clickFacebookLogin = () => {
-            document.querySelector(".facebook-login").click()
+            document.querySelector('.facebook-login').click()
         }
 
         const handleChangePseudo = (e) => {
@@ -26,7 +35,7 @@ class ProfileComponent extends Component {
         }
 
         return (
-            <div className={ "Profile "+ display }>
+            <div className={ `Profile ${display}` }>
                 <Input id="fullName"
                        className="input_container"
                        label="Full name"
@@ -58,8 +67,8 @@ class ProfileComponent extends Component {
                                    buttonText="Login With Facebook" />
                 </div>
             </div>
-        );
+        )
     }
 }
 
-export default ProfileComponent;
+export default ProfileComponent
