@@ -42,7 +42,7 @@ Then edit `config.js` if you need.
 
 | Command | Description | When to use it
 | --- | --- | --- |
-| **npm run buildBack** | **Build** only **back** |  |
+| **npm run buildBack** | **build** only **back** |  |
 | **npm run buildFront** | **build** only **front** |  |
 | **npm run build** | **build front** and **back** | When you only want to **build the whole app** |
 | **npm run watchBack** | build and launch **back** with **live reload** | When you want to work on **backend with live reload** |
