@@ -8,7 +8,8 @@
     "build": "npm run buildFront && npm run buildBack",
     "buildFront": "cd ./front/react-app && npm run build",
     "buildBack": "webpack",
-    "watchBack": "webpack && sudo nodemon bin/bundle && webpack --watch",
+    "watchBack": "webpack --watch",
+    "runBack": "sudo nodemon bin/bundle",
     "watchFront": "cd ./front/react-app && npm run start",
     "prod": "npm run build && pm2 start app.js",
     "stop": "pm2 stop app.js && pm2 delete app.js"
@@ -46,6 +47,8 @@
     "mysql": "^2.13.0",
     "node-sass": "^4.3.0",
     "request": "^2.81.0",
+    "stackinfo": "^1.1.5",
+    "token": "^0.1.0",
     "webpack": "^2.4.1"
   },
   "devDependencies": {}

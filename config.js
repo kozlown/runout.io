@@ -9,6 +9,11 @@ const config = {
         user: 'root',
         password: 'root',
         database: 'runout.io'
+    },
+    token: {
+        timeStep: 24 * 60 * 60,
+        secret: 'c\'est génial !', // 24h in seconds
+        cache: true
     }
 }
 
