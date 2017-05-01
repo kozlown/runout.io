@@ -25,7 +25,6 @@ const userController = {
                             // if there is an error with the request
                             reject({
                                 error: {
-                                    statusCode: 500,
                                     message: 'The request to Facebook failed, please contact the support for further information.'
                                 }
                             })
@@ -34,9 +33,16 @@ const userController = {
                             reject({
                                 facebookResponse
                             })
+                        } else {
+                            // if facebook response is successful
+                            try {
+                                resolve(JSON.parse(facebookResponse))
+                            } catch (e) {
+                                reject({
+                                    facebookResponse
+                                })
+                            }
                         }
-                        // if facebook response is successful
-                        resolve(JSON.parse(facebookResponse))
                     })
                 })
                 // if facebook recovery succeed
@@ -72,8 +78,8 @@ const userController = {
                 })
                 // if something failed
                 .catch(({ facebookResponse, registrationResponse, error }) => {
-                    // if facebook recovery failed
                     if (!_.isUndefined(facebookResponse)) {
+                        // if facebook recovery failed
                         callback({
                             statusCode: 401,
                             message: 'Data recovery from Facebook failed, see the Facebook\'s response below.',

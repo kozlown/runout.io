@@ -36,3 +36,6 @@ front/react-app/firefox_root
 
 # backend build
 bin/bundle.js
+
+# config
+config.js
