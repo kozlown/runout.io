@@ -238,12 +238,14 @@ const userModel = {
                         })
                     } else {
                         // the user exists
+                        // get the current time + 1 step in seconds
+                        const expiresOn = Date.now() + (config.token.timeStep * 1000)
                         // generate a new token
                         const token = JSON.stringify({
                             userId,
+                            expiresOn,
                             auth: tokenModule.generate(`${userId}`)
                         })
-                        console.info(`${userId}`, tokenModule.generate(`${userId}`))
                         resolve({
                             getTokenResponse: 'ok',
                             token
@@ -276,6 +278,11 @@ const userModel = {
             db.query(getUserDataQuery, [userId], (error, results) => {
                 if (error) {
                     reject({ error })
+                }
+                if (results.length === 0) {
+                    reject({
+                        getProfileResponse: 'noUserFound'
+                    })
                 }
                 resolve({
                     getProfileResponse: 'ok',

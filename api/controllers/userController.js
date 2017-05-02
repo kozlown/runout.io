@@ -260,6 +260,18 @@ const userController = {
                     callback(usualErrors.never(stackinfo()))
                     break
             }
+        }).catch(({ getProfileResponse }) => {
+            switch (getProfileResponse) {
+                case 'noUserFound':
+                    callback({
+                        statusCode: 404,
+                        message: `No user found with id '${userId}'`
+                    })
+                    break
+                default:
+                    callback(usualErrors.never(stackinfo()))
+                    break
+            }
         })
     }
 }

@@ -26,7 +26,7 @@ userRoute.all('*', (req, res, next) => {
         }
     })
 })
-userRoute.get('/profile', (req, res, next) => {
+userRoute.get('/profile', (req, res) => {
     const userId = req.query.userId
     userController.getProfile({ userId }, (response) => {
         res.status(response.statusCode).json(response)
