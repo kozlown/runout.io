@@ -247,6 +247,31 @@ const userController = {
     verifyToken({ token }, callback) {
         callback(userModel.verifyToken({ token }))
     },
+    getToken({ userId }, callback) {
+        userModel.getToken({
+            userId
+        }).then(
+            ({ getTokenResponse, token }) => {
+                switch (getTokenResponse) {
+                    case 'ok':
+                        callback({
+                            statusCode: 200,
+                            getTokenResponse,
+                            token
+                        })
+                        break
+                    case 'noUser':
+                    case 'noUserId':
+                    default:
+                        callback({
+                            statusCode: 403,
+                            getTokenResponse
+                        })
+                        break
+                }
+            }
+        )
+    },
     getProfile({ userId }, callback) {
         userModel.getProfile({ userId }).then(({ getProfileResponse, data }) => {
             switch (getProfileResponse) {

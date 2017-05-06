@@ -4,17 +4,18 @@ import userController from '../controllers/userController'
 const userRoute = new express.Router()
 
 userRoute.post('/register', (req, res) => {
-    userController.register(req.query || {}, (response) => {
+    userController.register(req.body || {}, (response) => {
         res.status(response.statusCode).json(response)
     })
 })
 userRoute.post('/login', (req, res) => {
-    userController.login(req.query || {}, (response) => {
+    userController.login(req.body || {}, (response) => {
         res.status(response.statusCode).json(response)
     })
 })
 userRoute.all('*', (req, res, next) => {
-    userController.verifyToken(req.query || {}, (response) => {
+    const token = req.cookies.token
+    userController.verifyToken({ token }, (response) => {
         if (response.validToken) {
             req.query.userId = response.userId
             next()
@@ -24,6 +25,12 @@ userRoute.all('*', (req, res, next) => {
                 message: 'This token is invalid, login to get a new valid token.'
             })
         }
+    })
+})
+userRoute.get('/token', (req, res) => {
+    const userId = req.query.userId
+    userController.getToken({ userId }, (response) => {
+        res.status(response.statusCode).json(response)
     })
 })
 userRoute.get('/profile', (req, res) => {

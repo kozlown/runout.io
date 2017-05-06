@@ -69,9 +69,10 @@ const userModel = {
                         SET facebook_id = ?, facebook_name = ?
                         WHERE email = ?`
                     const insertUserQuery = 'INSERT INTO user SET ?'
+                    const registrationQueryData = Object.assign({}, registrationData)
                     switch (registrationResponse) {
                         case 'update':
-                                // the user exist but has not already logged in with facebook
+                            // the user exist but has not already logged in with facebook
                             db.query(updateUserQuery, [
                                 registrationData.facebook_id,
                                 registrationData.facebook_name,
@@ -90,8 +91,9 @@ const userModel = {
                             })
                             break
                         case 'insert':
-                                // the user doesn't exist at all
-                            db.query(insertUserQuery, registrationData, (error) => {
+                            delete registrationQueryData.type
+                            // the user doesn't exist at all
+                            db.query(insertUserQuery, registrationQueryData, (error) => {
                                 db.end()
                                 if (error) {
                                     reject({
@@ -99,7 +101,7 @@ const userModel = {
                                     })
                                 } else {
                                     resolve({
-                                        registrationResponse
+                                        registrationResponse: 'login'
                                     })
                                 }
                             })
@@ -191,6 +193,11 @@ const userModel = {
                                 })
                             )
                         case 'noUser':
+                            return new Promise((resolve) => {
+                                resolve({
+                                    loginResponse
+                                })
+                            })
                         default:
                             return new Promise((resolve, reject) => {
                                 reject({
@@ -238,12 +245,15 @@ const userModel = {
                         })
                     } else {
                         // the user exists
-                        // get the current time + 1 step in seconds
-                        const expiresOn = Date.now() + (config.token.timeStep * 1000)
+                        // send expiration on current time + 2 steps
+                        const expiresOn = Date.now() + (config.token.timeStep * 1000 * 2)
+                        // tell to renew after first step
+                        const renewAfter = Date.now() + (config.token.timeStep * 1000)
                         // generate a new token
                         const token = JSON.stringify({
                             userId,
                             expiresOn,
+                            renewAfter,
                             auth: tokenModule.generate(`${userId}`)
                         })
                         resolve({
