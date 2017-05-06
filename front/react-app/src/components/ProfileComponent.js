@@ -1,10 +1,18 @@
 import React, { Component } from 'react'
-// import urlencode from 'urlencode'
+import urlencode from 'urlencode'
 import { FacebookLogin } from 'react-facebook-login-component'
 import config from '../config'
 import Input from './tools/Input'
 
 class ProfileComponent extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            pseudo: 'Guest',
+            pseudoWarning: '',
+            pseudoError: ''
+        }
+    }
     componentDidMount() {
         const readCookie = (name) => {
             const nameEQ = `${name}=`
@@ -69,7 +77,49 @@ class ProfileComponent extends Component {
             document.querySelector('.facebook-login').click()
         }
         const handleChangePseudo = (e) => {
-            this.props.change_pseudo(e.target.value)()
+            // if he's not logged in he can't change pseudo
+            const getCookie = (cname) => {
+                const name = `${cname}=`
+                const decodedCookie = decodeURIComponent(document.cookie)
+                const ca = decodedCookie.split(';')
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i]
+                    while (c.charAt(0) === ' ') {
+                        c = c.substring(1)
+                    }
+                    if (c.indexOf(name) === 0) {
+                        return c.substring(name.length, c.length)
+                    }
+                }
+                return ''
+            }
+            if (!getCookie('token')) {
+                this.setState({
+                    pseudoWarning: 'You must login to change your pseudo.'
+                })
+                return
+            }
+            const pseudo = e.target.value
+            this.setState({
+                pseudo
+            })
+            ProfileComponent.changePseudo(pseudo, (succeed, response) => {
+                if (succeed) {
+                    this.props.change_pseudo(pseudo)()
+                    this.setState({
+                        pseudoWarning: ''
+                    })
+                } else {
+                    try {
+                        const responseObject = JSON.parse(response)
+                        this.setState({
+                            pseudoWarning: responseObject.message
+                        })
+                    } catch (err) {
+                        console.error(err)
+                    }
+                }
+            })
         }
         const handleChangeFullName = (e) => {
             e.preventDefault()
@@ -90,7 +140,9 @@ class ProfileComponent extends Component {
                        name="pseudo"
                        onChange={ handleChangePseudo }
                        type="text"
-                       value={ this.props.state.Profile.pseudo } />
+                       warningMessage={ this.state.pseudoWarning }
+                       errorMessage={ this.state.pseudoError }
+                       value={ this.state.pseudo } />
                 <div className="facebook-login-container">
                     <a className="btn btn-block btn-social btn-facebook" onClick={ clickFacebookLogin }>
                         <span className="fa fa-facebook" /> Sign in with Facebook
@@ -120,7 +172,13 @@ class ProfileComponent extends Component {
                 try {
                     const getProfileResponse = JSON.parse(reqGetProfile.responseText)
                     const facebookName = getProfileResponse.data.facebook_name
+                    const pseudo = getProfileResponse.data.pseudo
                     this.props.change_real_name(facebookName)()
+                    this.props.change_pseudo(pseudo)()
+                    this.setState({
+                        pseudo,
+                        pseudoWarning: ''
+                    })
                 } catch (e) {
                     console.error(e)
                 }
@@ -148,6 +206,24 @@ class ProfileComponent extends Component {
                     }
                 } else {
                     callback(false, reqGetToken.responseText)
+                }
+            }
+        }
+    }
+    static changePseudo(pseudo, callback) {
+        const reqChangePseudo = new XMLHttpRequest()
+        const params = `pseudo=${urlencode(pseudo)}`
+        reqChangePseudo.open('PUT', `${config.api.host}/api/user/pseudo`)
+        reqChangePseudo.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+        reqChangePseudo.withCredentials = true
+        reqChangePseudo.send(params)
+
+        reqChangePseudo.onreadystatechange = () => {
+            if (reqChangePseudo.readyState === 4) {
+                if (reqChangePseudo.status === 200) {
+                    callback(true)
+                } else {
+                    callback(false, reqChangePseudo.responseText)
                 }
             }
         }

@@ -13,6 +13,13 @@ class Input extends Component {
                            required />
                     <span className="bar" />
                     <label>{ this.props.label }</label>
+                    <p className={ `warning ${this.props.warningMessage ? '' : 'hidden'}` }>
+                        <i className="fa fa-exclamation-triangle" aria-hidden="true" />
+                        { this.props.warningMessage }
+                    </p>
+                    <p className={ `error ${this.props.errorMessage ? '' : 'hidden'}` } >
+                        { this.props.errorMessage }
+                    </p>
                 </div>
             </div>
         )

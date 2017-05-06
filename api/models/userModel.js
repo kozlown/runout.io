@@ -38,7 +38,8 @@ const userModel = {
                             }
                         }
                     )
-                }).then(({ registrationResponse }) => new Promise((resolve, reject) => {
+                })
+                .then(({ registrationResponse }) => new Promise((resolve, reject) => {
                     if (registrationResponse === 'login') {
                         resolve({
                             registrationResponse
@@ -64,7 +65,8 @@ const userModel = {
                                 }
                             }
                         )
-                })).then(({ registrationResponse }) => new Promise((resolve, reject) => {
+                }))
+                .then(({ registrationResponse }) => new Promise((resolve, reject) => {
                     const updateUserQuery = `UPDATE user 
                         SET facebook_id = ?, facebook_name = ?
                         WHERE email = ?`
@@ -298,6 +300,68 @@ const userModel = {
                     getProfileResponse: 'ok',
                     data: results[0]
                 })
+            })
+        })
+    },
+    checkPseudo({ pseudo, userId }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        return new Promise((resolve, reject) => {
+            const checkPseudoQuery = 'SELECT * FROM user WHERE pseudo = ? AND id <> ?'
+            db.query(checkPseudoQuery, [pseudo, userId], (error, results) => {
+                db.end()
+                if (error) {
+                    reject({ error })
+                }
+                if (results.length === 0) {
+                    resolve({
+                        checkPseudoResponse: 'ok'
+                    })
+                } else {
+                    reject({
+                        checkPseudoResponse: 'pseudoTaken'
+                    })
+                }
+            })
+        })
+    },
+    setPseudo({ userId, pseudo }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        return new Promise((resolve, reject) => {
+            try {
+                if (pseudo.length > config.fields.pseudo.maxLength) {
+                    reject({
+                        updatePseudoResponse: 'tooBig'
+                    })
+                    return
+                } else if (pseudo.length < config.fields.pseudo.minLength) {
+                    reject({
+                        updatePseudoResponse: 'tooSmall'
+                    })
+                }
+            } catch (error) {
+                reject({
+                    error
+                })
+                return
+            }
+            const updatePseudoQuery = 'UPDATE user SET pseudo = ? WHERE id = ?'
+            db.query(updatePseudoQuery, [pseudo, userId], (error) => {
+                db.end()
+                if (error) {
+                    reject({
+                        error
+                    })
+                } else {
+                    resolve({
+                        updatePseudoResponse: 'ok'
+                    })
+                }
             })
         })
     }

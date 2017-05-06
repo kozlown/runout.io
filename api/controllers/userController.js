@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import stackinfo from 'stackinfo'
 import request from 'request'
+import config from '../../config'
 import usualErrors from '../errors/usualErrors'
 import userModel from '../models/userModel'
 
@@ -250,27 +251,25 @@ const userController = {
     getToken({ userId }, callback) {
         userModel.getToken({
             userId
-        }).then(
-            ({ getTokenResponse, token }) => {
-                switch (getTokenResponse) {
-                    case 'ok':
-                        callback({
-                            statusCode: 200,
-                            getTokenResponse,
-                            token
-                        })
-                        break
-                    case 'noUser':
-                    case 'noUserId':
-                    default:
-                        callback({
-                            statusCode: 403,
-                            getTokenResponse
-                        })
-                        break
-                }
+        }).then(({ getTokenResponse, token }) => {
+            switch (getTokenResponse) {
+                case 'ok':
+                    callback({
+                        statusCode: 200,
+                        getTokenResponse,
+                        token
+                    })
+                    break
+                case 'noUser':
+                case 'noUserId':
+                default:
+                    callback({
+                        statusCode: 403,
+                        getTokenResponse
+                    })
+                    break
             }
-        )
+        })
     },
     getProfile({ userId }, callback) {
         userModel.getProfile({ userId }).then(({ getProfileResponse, data }) => {
@@ -296,6 +295,66 @@ const userController = {
                 default:
                     callback(usualErrors.never(stackinfo()))
                     break
+            }
+        })
+    },
+    setPseudo({ userId, pseudo }, callback) {
+        userModel.checkPseudo({ userId, pseudo })
+        .then(({ checkPseudoResponse }) => new Promise((resolve, reject) => {
+            if (checkPseudoResponse === 'ok') {
+                resolve({
+                    checkPseudoResponse
+                })
+            } else {
+                reject(usualErrors.never(stackinfo()))
+            }
+        }))
+        .then(() => userModel.setPseudo({ userId, pseudo }))
+        .then(({ updatePseudoResponse }) => {
+            if (updatePseudoResponse === 'ok') {
+                callback({
+                    statusCode: 200
+                })
+            } else {
+                callback(usualErrors.never(stackinfo()))
+            }
+        })
+        .catch(({ error, checkPseudoResponse, updatePseudoResponse }) => {
+            if (!_.isUndefined(error)) {
+                callback({
+                    statusCode: 500,
+                    error
+                })
+            } else if (!_.isUndefined(checkPseudoResponse)) {
+                switch (checkPseudoResponse) {
+                    case 'pseudoTaken':
+                        callback({
+                            statusCode: 403,
+                            message: 'Sorry, this pseudo is already in use by another user.'
+                        })
+                        break
+                    default:
+                        callback(usualErrors.never(stackinfo()))
+                        break
+                }
+            } else if (!_.isUndefined(updatePseudoResponse)) {
+                switch (updatePseudoResponse) {
+                    case 'tooSmall':
+                        callback({
+                            statusCode: 403,
+                            message: `This pseudo is too small (min. ${config.fields.pseudo.minLength}).`
+                        })
+                        break
+                    case 'tooBig':
+                        callback({
+                            statusCode: 403,
+                            message: `This pseudo is too big (max. ${config.fields.pseudo.maxLength}).`
+                        })
+                        break
+                    default:
+                        callback(usualErrors.never(stackinfo()))
+                        break
+                }
             }
         })
     }

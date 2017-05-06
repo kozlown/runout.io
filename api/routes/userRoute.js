@@ -17,7 +17,7 @@ userRoute.all('*', (req, res, next) => {
     const token = req.cookies.token
     userController.verifyToken({ token }, (response) => {
         if (response.validToken) {
-            req.query.userId = response.userId
+            req.userId = response.userId
             next()
         } else {
             res.status(403).json({
@@ -34,8 +34,15 @@ userRoute.get('/token', (req, res) => {
     })
 })
 userRoute.get('/profile', (req, res) => {
-    const userId = req.query.userId
+    const userId = req.query.userId || req.userId
     userController.getProfile({ userId }, (response) => {
+        res.status(response.statusCode).json(response)
+    })
+})
+userRoute.put('/pseudo', (req, res) => {
+    const userId = req.userId
+    const pseudo = req.body.pseudo
+    userController.setPseudo({ userId, pseudo }, (response) => {
         res.status(response.statusCode).json(response)
     })
 })
