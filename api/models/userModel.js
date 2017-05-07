@@ -38,7 +38,8 @@ const userModel = {
                             }
                         }
                     )
-                }).then(({ registrationResponse }) => new Promise((resolve, reject) => {
+                })
+                .then(({ registrationResponse }) => new Promise((resolve, reject) => {
                     if (registrationResponse === 'login') {
                         resolve({
                             registrationResponse
@@ -64,14 +65,16 @@ const userModel = {
                                 }
                             }
                         )
-                })).then(({ registrationResponse }) => new Promise((resolve, reject) => {
+                }))
+                .then(({ registrationResponse }) => new Promise((resolve, reject) => {
                     const updateUserQuery = `UPDATE user 
                         SET facebook_id = ?, facebook_name = ?
                         WHERE email = ?`
                     const insertUserQuery = 'INSERT INTO user SET ?'
+                    const registrationQueryData = Object.assign({}, registrationData)
                     switch (registrationResponse) {
                         case 'update':
-                                // the user exist but has not already logged in with facebook
+                            // the user exist but has not already logged in with facebook
                             db.query(updateUserQuery, [
                                 registrationData.facebook_id,
                                 registrationData.facebook_name,
@@ -90,8 +93,9 @@ const userModel = {
                             })
                             break
                         case 'insert':
-                                // the user doesn't exist at all
-                            db.query(insertUserQuery, registrationData, (error) => {
+                            delete registrationQueryData.type
+                            // the user doesn't exist at all
+                            db.query(insertUserQuery, registrationQueryData, (error) => {
                                 db.end()
                                 if (error) {
                                     reject({
@@ -99,7 +103,7 @@ const userModel = {
                                     })
                                 } else {
                                     resolve({
-                                        registrationResponse
+                                        registrationResponse: 'login'
                                     })
                                 }
                             })
@@ -191,6 +195,11 @@ const userModel = {
                                 })
                             )
                         case 'noUser':
+                            return new Promise((resolve) => {
+                                resolve({
+                                    loginResponse
+                                })
+                            })
                         default:
                             return new Promise((resolve, reject) => {
                                 reject({
@@ -238,12 +247,15 @@ const userModel = {
                         })
                     } else {
                         // the user exists
-                        // get the current time + 1 step in seconds
-                        const expiresOn = Date.now() + (config.token.timeStep * 1000)
+                        // send expiration on current time + 2 steps
+                        const expiresOn = Date.now() + (config.token.timeStep * 1000 * 2)
+                        // tell to renew after first step
+                        const renewAfter = Date.now() + (config.token.timeStep * 1000)
                         // generate a new token
                         const token = JSON.stringify({
                             userId,
                             expiresOn,
+                            renewAfter,
                             auth: tokenModule.generate(`${userId}`)
                         })
                         resolve({
@@ -288,6 +300,68 @@ const userModel = {
                     getProfileResponse: 'ok',
                     data: results[0]
                 })
+            })
+        })
+    },
+    checkPseudo({ pseudo, userId }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        return new Promise((resolve, reject) => {
+            const checkPseudoQuery = 'SELECT * FROM user WHERE pseudo = ? AND id <> ?'
+            db.query(checkPseudoQuery, [pseudo, userId], (error, results) => {
+                db.end()
+                if (error) {
+                    reject({ error })
+                }
+                if (results.length === 0) {
+                    resolve({
+                        checkPseudoResponse: 'ok'
+                    })
+                } else {
+                    reject({
+                        checkPseudoResponse: 'pseudoTaken'
+                    })
+                }
+            })
+        })
+    },
+    setPseudo({ userId, pseudo }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        return new Promise((resolve, reject) => {
+            try {
+                if (pseudo.length > config.fields.pseudo.maxLength) {
+                    reject({
+                        updatePseudoResponse: 'tooBig'
+                    })
+                    return
+                } else if (pseudo.length < config.fields.pseudo.minLength) {
+                    reject({
+                        updatePseudoResponse: 'tooSmall'
+                    })
+                }
+            } catch (error) {
+                reject({
+                    error
+                })
+                return
+            }
+            const updatePseudoQuery = 'UPDATE user SET pseudo = ? WHERE id = ?'
+            db.query(updatePseudoQuery, [pseudo, userId], (error) => {
+                db.end()
+                if (error) {
+                    reject({
+                        error
+                    })
+                } else {
+                    resolve({
+                        updatePseudoResponse: 'ok'
+                    })
+                }
             })
         })
     }

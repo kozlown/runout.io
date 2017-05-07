@@ -1,77 +1,72 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import _ from 'lodash'
+
+const serversSample = [
+    {
+        icon: 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/Play-Games-icon.png',
+        name: 'Robot server',
+        mod: 'run',
+        mapName: 'robot_map_v1',
+        nbPlayers: 11,
+        ping: 67
+    }
+]
 
 class ServersComponent extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            servers: serversSample,
+            serversDom: []
+        }
+    }
+    componentDidMount() {
+        this.updateServers()
+        this.displayServers()
+    }
     render() {
-        const stateServers = this.props.state.Servers
-        let servers = []
-
-        const generateMap = (key) => {
-            const grass_main = "./assets/images/grass_main.png"
-
-            const tiles1 = []
-            for (let x=0, largeur=20; x<largeur; x++ ){
-                for (let y=0, hauteur=20; y<hauteur; y++ ){
-                    tiles1.push({
-                        position: {
-                            x: x*key,
-                            y: y*key,
-                        },
-                        line: x*key,
-                        column: y*key,
-                        tileset: {
-                            url: grass_main
-                        }
-                    })
-                }
-            }
-
-            const tiles2 = []
-            for (let x=0, largeur=20; x<largeur; x++ ){
-                for (let y=0, hauteur=20; y<hauteur; y++ ){
-                    tiles2.push({
-                        position: {
-                            x: x*key,
-                            y: y*key,
-                        },
-                        line: (x-1)*key,
-                        column: y*key,
-                        tileset: {
-                            url: grass_main
-                        }
-                    })
-                }
-            }
-
-            const map = [{
-                type: "design",
-                tiles: tiles1
-            }, {
-                type: "design",
-                tiles: tiles2
-            }]
-
-            return map
-        }
-
-        // set servers dom
-        for (let i=0, size=stateServers.servers.length; i<size; i++) {
-            let server = stateServers.servers[i]
-
-            servers.push(
-                <p className={ `server` } key={ i } onClick={this.props.loadMap(generateMap(i))}>
-                    <span className="id">{ server.id }</span>. <span className="name">{ server.name }</span>
-                </p>
-            )
-        }
-
         return (
             <div className="Servers">
+                <div className="label-servers">
+                    <p className="icon">icon</p>
+                    <div className="info">
+                        <p className="name">name</p>
+                        <p className="mod">mod</p>
+                        <p className="mapName">map</p>
+                        <p className="nbPlayers">players</p>
+                        <p className="ping">ping</p>
+                    </div>
+                </div>
                 <div className="list">
-                    { servers }
+                    { this.state.serversDom }
                 </div>
                 <div className="play" onClick={ this.props.toggle_menu() }><p>GO !</p></div>
             </div>
-        );
+        )
+    }
+    updateServers() {
+
+    }
+    displayServers() {
+        const servers = this.state.servers
+        const serversDom = []
+        _.each(servers, (server, index) => {
+            serversDom.push(
+                <p className="server" key={ index }>
+                    <img src={ server.icon } alt="icon" className="icon" />
+                    <div className="info">
+                        <span className="name">{ server.name }</span>
+                        <span className="mod">{ server.mod }</span>
+                        <span className="mapName">{ server.mapName }</span>
+                        <span className="nbPlayers">{ server.nbPlayers }</span>
+                        <span className="ping">{ server.ping }</span>
+                    </div>
+                </p>
+            )
+        })
+        this.setState({
+            serversDom
+        })
     }
 }
 
