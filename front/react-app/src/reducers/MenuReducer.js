@@ -20,7 +20,7 @@ const MenuReducer = (state = initialState, action) => {
 
             return {
                 ...state,
-                panel : action.data.panel
+                panel: action.data.panel
             }
 
         default:
