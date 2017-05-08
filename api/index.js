@@ -1,3 +1,5 @@
-module.exports = {
-  router : require('./router')
-};
+import router from './router'
+
+export default {
+    router
+}

@@ -1,13 +1,69 @@
 .Profile
+    position: absolute
+    text-align: left
+    left: 0
     width: 50%
     height: 100%
-    position: absolute
     background-color: inherit
     opacity: 1
     z-index: 1
     transition: .2s
     border-bottom-left-radius: inherit
+    padding: 50px
 
+    ::selection
+        background-color: $light
     &.hidden
         opacity: 0
         z-index: 0
+
+    .input_container
+        padding: 20px 0 20px 0
+        position: relative
+
+        .bar
+            width: 100%
+            max-width: 400px
+
+            &::before, &::after
+                bottom: 0
+                background: $dark
+        input
+            width: 100%
+            padding-left: 10px
+            max-width: 400px
+            background-color: $dark
+            color: $light
+            border-bottom: none
+            transition: .1s
+
+            &:disabled
+                background-color: $dark
+                cursor: not-allowed
+
+                ~ label
+                    top: -20px
+                    font-size: 14px
+                    color: $dark
+
+            ~ label
+                color: $light
+                user-select: none
+
+            &:focus ~ label, &:valid ~ label
+                color: $dark
+
+            &:focus
+                background-color: $light
+                color: $dark
+                padding-left: 15px
+
+        .group
+            margin-bottom: 0
+
+    .btn-facebook
+        left: auto
+
+    .facebook-login-container
+        position: relative
+        height: 50px

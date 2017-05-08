@@ -1,3 +1,7 @@
-module.exports = {
-  router : require('./router')
-};
+import router from './router'
+
+const frontRouter = {
+    router
+}
+
+export default frontRouter

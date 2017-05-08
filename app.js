@@ -1,17 +1,30 @@
-const configs               = require('./configs')
-express                     = require('express')
-const app                   = express()
+import express from 'express'
+import http from 'http'
+import cors from 'cors'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 
-let api                     = require('./api/index')
-let front                   = require('./front/index')
-let games_router            = require('./games_router/index')
+import config from './config'
+import api from './api/index'
+import front from './front/index'
+import gamesHandler from './gamesHandler/index'
 
+const app = express()
+
+app.use(cors({
+    origin: config.cors.allowedOrigins,
+    credentials: config.cors.credentials
+}))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.use('/api', api.router)
 app.use('/app', front.router)
-//app.use(games_router.router)
 
+// gamesHandler
+const server = http.createServer(app)
+gamesHandler(server)
 
-app.listen(configs.port, () => {
-	console.log(`Server now listening on port ${ configs.port }.`)
+server.listen(config.port, () => {
+    console.info(`Server now listening on port ${config.port}.`)
 })

@@ -1,12 +1,12 @@
 import { connect }      from 'react-redux'
 
-import App              from '../components/App'
+// import * as AppActions    from '../actions/AppActions'
+
+import App              from '../components/AppComponent'
 
 const mapStateToProps = (state) => {
     return {
-        state: {
-            pseudo: state.Profile.pseudo
-        }
+        state: state
     }
 }
 

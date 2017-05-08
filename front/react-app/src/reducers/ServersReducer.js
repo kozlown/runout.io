@@ -1,17 +1,16 @@
-import React from 'react';
-import * as types from '../actions/actionsTypes'
+// import * as types from '../actions/actionsTypes'
 
 let servers = []
-for (let i=0; i<10; i++) {
-    servers.push(<p className="server">server { i }</p>)
+
+for (let i=0; i<30; i++) {
+    servers.push({
+        id: i,
+        name: "cool server"
+    })
 }
 
 const initialState = {
-    servers : (
-        <div>
-            { servers }
-        </div>
-    )
+    servers: servers
 }
 
 const ServersReducer = (state = initialState, action) => {

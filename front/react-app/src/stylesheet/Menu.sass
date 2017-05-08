@@ -1,3 +1,11 @@
+$primary : #263238
+$light : #4f5b62
+$dark : #000a12
+
+$navHeight : 100px
+$coreHeight : calc(100% - 100px)
+$defaultFontSize : 14px
+@import tools/Input
 .Menu
     color: white
     position: fixed
@@ -5,23 +13,35 @@
     left: 25%
     width: 50%
     height: 80%
-    background-color: #090909
-    border-radius: 20px
+    background-color: $primary
+    border-radius: 2px
+    font-size: 0
+
+    .core
+        position: absolute
+        width: 100%
+        height: $coreHeight
+        border-bottom-left-radius: 2px
+        margin: 0
+        padding: 0
+        font-size: $defaultFontSize
+
+        @import Profile
+        @import Servers
+        @import Settings
 
     #profile_button, #settings_button
-        background-color: transparent
-        color: rgb(70, 70, 70)
+        background-color: $dark
+        color: $light
         font-weight: bold
         height: 100px
-        width: 25%
+        width: 15%
         display: inline-block
         position: relative
         top: 0
         float: left
         cursor: pointer
-
-        .selected
-            color: white
+        transition: width .1s
 
         p
             position: absolute
@@ -35,18 +55,25 @@
             width: 30px
             height: 30px
             margin: 0
-            padding: 0
-            padding: 15px
+            padding-top: 13px
             top: 20px
             z-index: 2
             border-radius: 100px
-            transition: .3s
+            transition: .2s
 
-            &:hover
-                color: white
+        &.selected
+            background-color: $primary
+            width: 35%
+
+        &.selected i
+            color: white
+
+        &.selected &:hover i
+            color: $primary
+
 
     #servers_button
-        background-color: transparent
+        background-color: $dark
         color: white
         font-weight: bold
         height: 100px
@@ -72,14 +99,4 @@
             z-index: 2
             border-radius: 100px
 
-    .core
-        position: absolute
-        width: 100%
-        height: calc(100% - 125px)
-        top: 125px
-        border-bottom-right-radius: 20px
-        border-bottom-left-radius: 20px
 
-        @import Profile
-        @import Servers
-        @import Settings
