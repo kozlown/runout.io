@@ -20,7 +20,7 @@ const gamesHandler = (server) => {
             } catch (e) {
                 const error = {
                     route: 'error',
-                    error: e
+                    error: e.toString()
                 }
                 const errorString = JSON.stringify(error)
                 ws.send(errorString)
