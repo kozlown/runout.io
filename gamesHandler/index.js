@@ -1,4 +1,5 @@
 import * as WebSocket from 'ws'
+import _ from 'lodash'
 import router from './router'
 
 const gamesHandler = (server) => {
@@ -26,8 +27,14 @@ const gamesHandler = (server) => {
                 ws.send(errorString)
             }
         })
-
-        ws.send('Hi')
+        ws.on('close', () => {
+            // remove the corresponding server from servers
+            _.each(servers, (serv, key) => {
+                if (serv.ws === ws) {
+                    servers.splice(key, key + 1)
+                }
+            })
+        })
     })
 }
 
