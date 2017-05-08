@@ -3,19 +3,9 @@ import clientRoute from './routes/clientRoute'
 import updateRoute from './routes/updateRoute'
 import _ from 'lodash'
 
-const router = (ws, servers, clients, message) => {
+const router = (ws, servers, clients, message, send, broadcast) => {
     const route = message.route
     const data = message.data
-    const send = (responseObject) => {
-        const responseString = JSON.stringify(responseObject)
-        ws.send(responseString)
-    }
-    const broadcast = (responseObject) => {
-        const responseString = JSON.stringify(responseObject)
-        _.each(clients, (client) => {
-            client.ws.send(responseString)
-        })
-    }
     // error
     const error = {
         route: 'error',
