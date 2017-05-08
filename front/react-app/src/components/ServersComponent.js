@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
+import config from '../config'
 
 const serversSample = [
     {
@@ -15,14 +16,42 @@ const serversSample = [
 class ServersComponent extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
+            ws: null,
             servers: serversSample,
             serversDom: []
         }
     }
     componentDidMount() {
+        const ws = new WebSocket(config.gamesHandler.host)
+        this.setState({
+            ws
+        })
+        ws.onopen = () => {
+            const sayHello = {
+                route: 'client'
+            }
+            const sayHelloString = JSON.stringify(sayHello)
+            ws.send(sayHelloString)
+
+            ws.onmessage = (event) => {
+                try {
+                    const dataObject = JSON.parse(event.data)
+                    console.info(dataObject)
+                    switch (dataObject.route) {
+                        case 'games':
+                            this.updateServers(dataObject.games)
+                            break
+                        default:
+                            break
+                    }
+                } catch (e) {
+                    console.info(e)
+                }
+            }
+        }
         this.updateServers()
-        this.displayServers()
     }
     render() {
         return (
@@ -44,24 +73,27 @@ class ServersComponent extends Component {
             </div>
         )
     }
-    updateServers() {
-
+    updateServers(servers) {
+        this.setState({
+            servers
+        })
+        this.displayServers()
     }
     displayServers() {
         const servers = this.state.servers
         const serversDom = []
         _.each(servers, (server, index) => {
             serversDom.push(
-                <p className="server" key={ index }>
+                <div className="server" key={ index }>
                     <img src={ server.icon } alt="icon" className="icon" />
                     <div className="info">
                         <span className="name">{ server.name }</span>
                         <span className="mod">{ server.mod }</span>
-                        <span className="mapName">{ server.mapName }</span>
+                        <span className="mapName">{ server.name }</span>
                         <span className="nbPlayers">{ server.nbPlayers }</span>
                         <span className="ping">{ server.ping }</span>
                     </div>
-                </p>
+                </div>
             )
         })
         this.setState({

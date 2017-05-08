@@ -1,6 +1,7 @@
 import helloRoute from './routes/helloRoute'
 import clientRoute from './routes/clientRoute'
 import updateRoute from './routes/updateRoute'
+import _ from 'lodash'
 
 const router = (ws, servers, clients, message) => {
     const route = message.route
@@ -8,6 +9,12 @@ const router = (ws, servers, clients, message) => {
     const send = (responseObject) => {
         const responseString = JSON.stringify(responseObject)
         ws.send(responseString)
+    }
+    const broadcast = (responseObject) => {
+        const responseString = JSON.stringify(responseObject)
+        _.each(clients, (client) => {
+            client.ws.send(responseString)
+        })
     }
     // error
     const error = {
@@ -21,7 +28,7 @@ const router = (ws, servers, clients, message) => {
             break
         // when game server says hello
         case 'hello':
-            helloRoute(ws, send, servers, data)
+            helloRoute(ws, send, servers, broadcast, data)
             break
         // when a game server update his fields
         case 'update':

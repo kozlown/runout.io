@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-const helloRoute = (ws, callback, servers, { icon, name, mod, playersNb, map, port }) => {
+const helloRoute = (ws, callback, servers, broadcast, { icon, name, mod, playersNb, map, port }) => {
     // check if all required fields are filled
     if (!_.isUndefined(icon) && !_.isUndefined(name) && !_.isUndefined(mod)
         && !_.isUndefined(playersNb) && !_.isUndefined(map)) {
@@ -12,15 +12,22 @@ const helloRoute = (ws, callback, servers, { icon, name, mod, playersNb, map, po
         if (pairServers.length === 0) {
             // add server to servers
             servers.push({
-                icon,
-                name,
-                mod,
-                playersNb,
-                map,
-                ip: ws.upgradeReq.connection.remoteAddress,
-                port,
+                info: {
+                    icon,
+                    name,
+                    mod,
+                    playersNb,
+                    map,
+                    ip: ws.upgradeReq.connection.remoteAddress,
+                    port
+                },
                 ws
             })
+            const gamesInfo = {
+                route: 'games',
+                games: Array.from(servers, server => server.info)
+            }
+            broadcast(gamesInfo)
             callback({
                 route: 'hello',
                 message: `Hello ${name}, you've been added to servers. 
