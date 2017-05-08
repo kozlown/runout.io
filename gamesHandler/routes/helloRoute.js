@@ -1,11 +1,14 @@
 import _ from 'lodash'
 
-const helloRoute = (ws, callback, servers, { icon, name, mod, playersNb, map }) => {
+const helloRoute = (ws, callback, servers, { icon, name, mod, playersNb, map, port }) => {
     // check if all required fields are filled
     if (!_.isUndefined(icon) && !_.isUndefined(name) && !_.isUndefined(mod)
         && !_.isUndefined(playersNb) && !_.isUndefined(map)) {
-        // check if a server already exists with this name
-        const pairServers = _.filter(servers, server => server.name === name)
+        // check if a server already exists with this name and another address
+        const ip = ws.upgradeReq.connection.remoteAddress
+        const pairServers = _.filter(servers,
+            server => server.name === name
+        )
         if (pairServers.length === 0) {
             // add server to servers
             servers.push({
@@ -14,7 +17,9 @@ const helloRoute = (ws, callback, servers, { icon, name, mod, playersNb, map }) 
                 mod,
                 playersNb,
                 map,
-                ip: ws.upgradeReq.connection.remoteAddress
+                ip: ws.upgradeReq.connection.remoteAddress,
+                port,
+                ws
             })
             callback({
                 route: 'hello',
