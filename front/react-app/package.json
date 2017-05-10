@@ -49,6 +49,7 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "base64-js": "^1.2.0",
     "lodash": "^4.17.4",
     "pixi-display": "^1.1.1",
     "pixi.js": "^4.5.1",

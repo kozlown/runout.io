@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
+import base64 from 'base64-js'
 import config from '../config'
 
 const serversSample = [
@@ -83,9 +84,12 @@ class ServersComponent extends Component {
         const servers = this.state.servers
         const serversDom = []
         _.each(servers, (server, index) => {
+            console.info(server.icon)
+            const base64Icon = `data:image/png;base64,${base64.fromByteArray(server.icon.data)}`
+            console.info(base64Icon)
             serversDom.push(
                 <div className="server" key={ index }>
-                    <img src={ server.icon } alt="icon" className="icon" />
+                    <img src={ base64Icon } alt="icon" className="icon" />
                     <div className="info">
                         <span className="name">{ server.name }</span>
                         <span className="mod">{ server.mod }</span>
