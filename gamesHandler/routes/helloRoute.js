@@ -18,7 +18,7 @@ const helloRoute = (ws, callback, servers, broadcast, { icon, name, mod, players
                     mod,
                     playersNb,
                     map,
-                    ip: ws.upgradeReq.connection.remoteAddress,
+                    ip: ws._socket.remoteAddress.replace('::ffff:', ''),
                     port
                 },
                 ws

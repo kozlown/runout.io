@@ -3,43 +3,33 @@ import _ from 'lodash'
 import base64 from 'base64-js'
 import config from '../config'
 
-const serversSample = [
-    {
-        icon: 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/Play-Games-icon.png',
-        name: 'Robot server',
-        mod: 'run',
-        mapName: 'robot_map_v1',
-        nbPlayers: 11,
-        ping: 67
-    }
-]
-
 class ServersComponent extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            ws: null,
-            servers: serversSample,
+            wsMainServer: null,
+            wsGameServer: null,
+            servers: [],
             serversDom: []
         }
     }
     componentDidMount() {
-        const ws = new WebSocket(config.gamesHandler.host)
+        const wsMainServer = new WebSocket(config.gamesHandler.host)
         this.setState({
-            ws
+            wsMainServer
         })
-        ws.onopen = () => {
+        wsMainServer.onopen = () => {
+            console.main(`connected at ${config.gamesHandler.host}`)
             const sayHello = {
                 route: 'client'
             }
             const sayHelloString = JSON.stringify(sayHello)
-            ws.send(sayHelloString)
+            wsMainServer.send(sayHelloString)
 
-            ws.onmessage = (event) => {
+            wsMainServer.onmessage = (event) => {
                 try {
                     const dataObject = JSON.parse(event.data)
-                    console.info(dataObject)
                     switch (dataObject.route) {
                         case 'games':
                             this.updateServers(dataObject.games)
@@ -52,7 +42,6 @@ class ServersComponent extends Component {
                 }
             }
         }
-        this.updateServers()
     }
     render() {
         return (
@@ -75,6 +64,7 @@ class ServersComponent extends Component {
         )
     }
     updateServers(servers) {
+        console.main('servers updated \n%O', servers)
         this.setState({
             servers
         })
@@ -84,11 +74,9 @@ class ServersComponent extends Component {
         const servers = this.state.servers
         const serversDom = []
         _.each(servers, (server, index) => {
-            console.info(server.icon)
             const base64Icon = `data:image/png;base64,${base64.fromByteArray(server.icon.data)}`
-            console.info(base64Icon)
             serversDom.push(
-                <div className="server" key={ index }>
+                <div className="server" onDoubleClick={ () => this.connectToGameServer(server) } key={ index }>
                     <img src={ base64Icon } alt="icon" className="icon" />
                     <div className="info">
                         <span className="name">{ server.name }</span>
@@ -103,6 +91,45 @@ class ServersComponent extends Component {
         this.setState({
             serversDom
         })
+    }
+    /**
+     * @method connectToGameServer
+     * @description connect to a game server
+     */
+    connectToGameServer(server) {
+        console.game(`try to connect to ws://${server.ip}:${server.port}`)
+        // close the last game connection
+        if (this.state.wsGameServer !== null) {
+            this.state.wsGameServer.close()
+        }
+        // connect to new game
+        const wsGameServer = new WebSocket(`ws://${server.ip}:${server.port}`)
+        this.setState({
+            wsGameServer
+        })
+        wsGameServer.onopen = () => {
+            console.game(`connected to ws://${server.ip}:${server.port}`)
+            const sayHello = {
+                route: 'client'
+            }
+            const sayHelloString = JSON.stringify(sayHello)
+            wsGameServer.send(sayHelloString)
+
+            wsGameServer.onmessage = (event) => {
+                try {
+                    const dataObject = JSON.parse(event.data)
+                    switch (dataObject.route) {
+                        case 'games':
+                            this.updateServers(dataObject.games)
+                            break
+                        default:
+                            break
+                    }
+                } catch (e) {
+                    console.info(e)
+                }
+            }
+        }
     }
 }
 
