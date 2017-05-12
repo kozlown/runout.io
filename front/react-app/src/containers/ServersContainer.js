@@ -6,22 +6,18 @@ import Servers              from '../components/ServersComponent'
 
 const mapStateToProps = (state) => {
     return {
-        state: state
+        state
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        loadMap: (key) => {
-            return () => {
-                dispatch(ServersActions.loadMap(key))
-            }
-        },
-        toggle_menu: () => {
-            return () => {
-                dispatch(ServersActions.toggle_menu())
-            }
-        },
+        toggleMenu: () => (() => {
+            dispatch(ServersActions.toggleMenu())
+        }),
+        joinGame: ws => (() => {
+            dispatch(ServersActions.joinGame(ws))
+        })
     }
 }
 

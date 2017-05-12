@@ -15,6 +15,7 @@ class ServersComponent extends Component {
         }
     }
     componentDidMount() {
+        // connect to main server
         const wsMainServer = new WebSocket(config.gamesHandler.host)
         this.setState({
             wsMainServer
@@ -59,7 +60,6 @@ class ServersComponent extends Component {
                 <div className="list">
                     { this.state.serversDom }
                 </div>
-                <div className="play" onClick={ this.props.toggle_menu() }><p>GO !</p></div>
             </div>
         )
     }
@@ -109,26 +109,46 @@ class ServersComponent extends Component {
         })
         wsGameServer.onopen = () => {
             console.game(`connected to ws://${server.ip}:${server.port}`)
-            const sayHello = {
-                route: 'client'
+            const readCookie = (name) => {
+                const nameEQ = `${name}=`
+                const ca = document.cookie.split(';')
+                for (let i = 0; i < ca.length; i += 1) {
+                    let c = ca[i]
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length)
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length)
+                }
+                return null
             }
-            const sayHelloString = JSON.stringify(sayHello)
-            wsGameServer.send(sayHelloString)
+            const token = readCookie('token')
+            const join = {
+                route: 'join',
+                token
+            }
+            const joinString = JSON.stringify(join)
 
             wsGameServer.onmessage = (event) => {
                 try {
                     const dataObject = JSON.parse(event.data)
                     switch (dataObject.route) {
-                        case 'games':
-                            this.updateServers(dataObject.games)
+                        case 'has joined':
+                            if (dataObject.status === 'ok') {
+                                console.game('joined game !')
+                                this.props.toggleMenu()()
+                                this.props.joinGame(wsGameServer)()
+                            } else if (status === 'error') {
+                                console.error(dataObject.error)
+                            }
                             break
                         default:
                             break
                     }
                 } catch (e) {
-                    console.info(e)
+                    console.error(e)
                 }
             }
+            // try to join
+            console.game('try to join game...')
+            wsGameServer.send(joinString)
         }
     }
 }
