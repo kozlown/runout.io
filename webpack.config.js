@@ -9,7 +9,7 @@ module.exports = {
         loaders: [
             {
                 loader: 'babel-loader',
-                exclude: /(node_modules|bower_components)/,
+                exclude: /node_modules/,
                 test: /\.jsx?$/,
                 // Options to configure babel with
                 query: {
