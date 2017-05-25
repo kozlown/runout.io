@@ -4,7 +4,8 @@ module.exports = {
         indent: [2, 4, { "SwitchCase": 1 }],
         semi: [2, 'never'],
         'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info', 'main', 'game'] }],
-        'comma-dangle': ['error', 'never']
+        'comma-dangle': ['error', 'never'],
+        'consistent-return': ['off']
     },
     extends: 'airbnb-base',
     plugins: [
