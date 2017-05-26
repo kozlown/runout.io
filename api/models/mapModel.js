@@ -2,6 +2,7 @@ import _ from 'lodash'
 import mysql from 'mysql'
 import bcrypt from 'bcryptjs'
 import config from '../../config'
+import userModel from '../models/userModel'
 
 const mapModel = {
     getMap({ mapName, password }) {
@@ -17,7 +18,7 @@ const mapModel = {
                 return mapModel.checkPassword({ mapName, password })
             }
             return new Promise((resolve, reject) => reject({
-                getMapResponse: `The map '${ mapName }' doesn't exist.`
+                getMapResponse: `The map '${mapName}' doesn't exist.`
             }))
         })
         // send map if authorized
@@ -41,8 +42,51 @@ const mapModel = {
             }))
         })
     },
-    newMap({ mapData, password }) {
-
+    newMap({ mapName, mapData, password, isPrivate, userId }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        // check if the map does already exist
+        return mapModel.mapExists({ mapName })
+        // if the map doesn't exist, insert it
+        .then((mapExists) => {
+            if (mapExists) {
+                return new Promise((resolve, reject) => {
+                    reject({
+                        newMapResponse: 'mapExist'
+                    })
+                })
+            }
+            return new Promise((resolve, reject) => {
+                bcrypt.genSalt(10, (err, salt) => {
+                    if (err) {
+                        return reject({ error: err })
+                    }
+                    bcrypt.hash(password, salt, (error, hash) => {
+                        if (error) {
+                            return reject({ error })
+                        }
+                        resolve(hash)
+                    })
+                })
+            })
+            .then(hash => new Promise((resolve, reject) => {
+                const insertMapQuery = 'INSERT INTO map SET ?'
+                const insertMapValues = {
+                    name: mapName,
+                    data: mapData,
+                    password: hash,
+                    private: isPrivate,
+                    owner: userId
+                }
+                db.query(insertMapQuery, insertMapValues, (error) => {
+                    if (error) {
+                        reject({ error })
+                    }
+                })
+            }))
+        })
     },
     updateMap({ mapData, mapName, password }) {
 

@@ -10,8 +10,8 @@ const mapController = {
         mapModel.getMap({ mapName, password })
         .then(({ getMapResponse }) => {
             callback({
-                statusCode: 400,
-                data: getMapResponse
+                statusCode: 200,
+                getMapResponse
             })
         })
         .catch(({ getMapResponse, checkPasswordResponse, error }) => {
@@ -35,24 +35,19 @@ const mapController = {
             }
         })
     },
-    newMap({ mapData, password, isPrivate }, callback) {
-        mapModel.newMap({ mapName, password })
-        .then(({ getMapResponse }) => {
+    newMap({ mapName, mapData, password, isPrivate, userId }, callback) {
+        mapModel.newMap({ mapName, mapData, password, isPrivate, userId })
+        .then(({ newMapResponse }) => {
             callback({
-                statusCode: 400,
-                data: getMapResponse
+                statusCode: 200,
+                newMapResponse
             })
         })
-        .catch(({ getMapResponse, checkPasswordResponse, error }) => {
-            if (!_.isUndefined(getMapResponse)) {
+        .catch(({ newMapResponse, checkTokenResponse, error }) => {
+            if (!_.isUndefined(newMapResponse)) {
                 callback({
                     statusCode: 400,
-                    getMapResponse
-                })
-            } else if (!_.isUndefined(checkPasswordResponse)) {
-                callback({
-                    statusCode: 400,
-                    checkPasswordResponse
+                    message: newMapResponse
                 })
             } else if (!_.isUndefined(error)) {
                 callback({
