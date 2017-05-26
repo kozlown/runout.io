@@ -59,8 +59,8 @@ const mapController = {
             }
         })
     },
-    updateMap({ mapData, mapName, userId }, callback) {
-        mapModel.updateMap({ mapData, mapName, userId })
+    updateMap({ mapData, mapName, password, isPrivate, userId }, callback) {
+        mapModel.updateMap({ mapData, mapName, password, isPrivate, userId })
         .then(({ updateMapResponse }) => {
             callback({
                 statusCode: 200,

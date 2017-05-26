@@ -36,10 +36,12 @@ userRoute.post('/:name', (req, res) => {
     })
 })
 userRoute.put('/:name', (req, res) => {
+    const password = req.query.password
     const mapData = req.query.data
+    const isPrivate = req.query.private
     const mapName = req.params.name
     const userId = req.userId
-    mapController.updateMap({ mapName, mapData, userId }, (response) => {
+    mapController.updateMap({ mapName, mapData, password, isPrivate, userId }, (response) => {
         res.status(response.statusCode).json(response)
     })
 })

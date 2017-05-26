@@ -18,7 +18,7 @@ const mapModel = {
                 return mapModel.checkPassword({ mapName, password })
             }
             return new Promise((resolve, reject) => reject({
-                getMapResponse: `The map '${mapName}' doesn't exist.`
+                getMapResponse: 'mapDoesNotExist'
             }))
         })
         // send map if authorized
@@ -38,7 +38,7 @@ const mapModel = {
                 })
             }
             return new Promise((resolve, reject) => reject({
-                checkPasswordResponse: 'The provided password is invalid.'
+                getMapResponse: 'invalidPassword'
             }))
         })
     },
@@ -54,7 +54,7 @@ const mapModel = {
             if (mapExists) {
                 return new Promise((resolve, reject) => {
                     reject({
-                        newMapResponse: 'mapExist'
+                        newMapResponse: 'mapAlreadyExist'
                     })
                 })
             }
@@ -70,16 +70,13 @@ const mapModel = {
                 if (_.isUndefined(password)) {
                     return resolve('')
                 }
-                bcrypt.genSalt(10, (err, salt) => {
-                    if (err) {
-                        return reject({ error: err })
+                mapModel.hashPassword(password, ({ error, hash }) => {
+                    if (error) {
+                        reject({
+                            error
+                        })
                     }
-                    bcrypt.hash(password, salt, (error, hash) => {
-                        if (error) {
-                            return reject({ error })
-                        }
-                        resolve(hash)
-                    })
+                    resolve(hash)
                 })
             })
             .then(hash => new Promise((resolve, reject) => {
@@ -114,7 +111,7 @@ const mapModel = {
             }))
         })
     },
-    updateMap({ mapData, mapName, userId }) {
+    updateMap({ mapData, mapName, password, isPrivate, userId }) {
         const db = mysql.createConnection({
             ...config.database,
             debug: false
@@ -127,34 +124,65 @@ const mapModel = {
                 return mapModel.checkOwner({ mapName, userId })
             }
             return new Promise((resolve, reject) => reject({
-                updateMapResponse: `The map '${mapName}' doesn't exist.`
+                updateMapResponse: 'mapDoesNotExist'
             }))
         })
         // update map if authorized
-        .then((passwordIsValid) => {
-            if (passwordIsValid) {
-                // check if the new mapData has a valid JSON format
-                let mapDataString = null
-                try {
-                    mapDataString = JSON.stringify(JSON.parse(mapData))
-                } catch (error) {
-                    return new Promise((resolve, reject) => reject({ error }))
-                }
-                // update the map
-                const updateMapQuery = 'UPDATE map SET data = ? WHERE name = ?'
+        .then((isOwner) => {
+            if (isOwner) {
                 return new Promise((resolve, reject) => {
-                    db.query(updateMapQuery, [mapDataString, mapName], (error) => {
-                        if (error) {
+                    if (_.isUndefined(password) && isPrivate === '1') {
+                        return reject({
+                            updateMapResponse: 'privateMapNeedPassword'
+                        })
+                    }
+                    // check if the new mapData has a valid JSON format
+                    const updateMapFields = {}
+                    if (!_.isUndefined(mapData)) {
+                        let mapDataString = null
+                        try {
+                            mapDataString = JSON.stringify(JSON.parse(mapData))
+                        } catch (error) {
                             return reject({ error })
                         }
-                        return resolve({
-                            updateMapResponse: 'ok'
+                        updateMapFields.data = mapDataString
+                    }
+                    if (!_.isUndefined(isPrivate)) {
+                        updateMapFields.private = isPrivate
+                    }
+                    if (!_.isUndefined(password)) {
+                        mapModel.hashPassword(password, ({ error, hash }) => {
+                            if (error) {
+                                reject({ error })
+                            }
+                            updateMapFields.password = hash
+                            // update the map
+                            const updateMapQuery = 'UPDATE map SET ? WHERE name = ?'
+                            db.query(updateMapQuery, [updateMapFields, mapName], (err) => {
+                                if (err) {
+                                    return reject({ error: err })
+                                }
+                                return resolve({
+                                    updateMapResponse: 'ok'
+                                })
+                            })
                         })
-                    })
+                    } else {
+                        // update the map
+                        const updateMapQuery = 'UPDATE map SET ? WHERE name = ?'
+                        db.query(updateMapQuery, [updateMapFields, mapName], (error) => {
+                            if (error) {
+                                return reject({ error })
+                            }
+                            return resolve({
+                                updateMapResponse: 'ok'
+                            })
+                        })
+                    }
                 })
             }
             return new Promise((resolve, reject) => reject({
-                checkPasswordResponse: 'The provided password is invalid.'
+                updateMapResponse: 'notOwner'
             }))
         })
     },
@@ -236,6 +264,19 @@ const mapModel = {
                     })
                 }
                 return resolve(results.length > 0)
+            })
+        })
+    },
+    hashPassword(password, callback) {
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) {
+                return callback({error: err})
+            }
+            bcrypt.hash(password, salt, (error, hash) => {
+                if (error) {
+                    return callback({error})
+                }
+                callback({hash})
             })
         })
     }
