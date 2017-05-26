@@ -2,7 +2,6 @@ import _ from 'lodash'
 import mysql from 'mysql'
 import bcrypt from 'bcryptjs'
 import config from '../../config'
-import userModel from '../models/userModel'
 
 const mapModel = {
     getMap({ mapName, password }) {
