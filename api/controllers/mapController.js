@@ -43,7 +43,7 @@ const mapController = {
                 newMapResponse
             })
         })
-        .catch(({ newMapResponse, checkTokenResponse, error }) => {
+        .catch(({ newMapResponse, error }) => {
             if (!_.isUndefined(newMapResponse)) {
                 callback({
                     statusCode: 400,
@@ -59,8 +59,29 @@ const mapController = {
             }
         })
     },
-    updateMap({ mapData, mapName, password }, callback) {
-
+    updateMap({ mapData, mapName, userId }, callback) {
+        mapModel.updateMap({ mapData, mapName, userId })
+        .then(({ updateMapResponse }) => {
+            callback({
+                statusCode: 200,
+                updateMapResponse
+            })
+        })
+        .catch(({ updateMapResponse, error }) => {
+            if (!_.isUndefined(updateMapResponse)) {
+                callback({
+                    statusCode: 400,
+                    message: updateMapResponse
+                })
+            } else if (!_.isUndefined(error)) {
+                callback({
+                    statusCode: 500,
+                    error
+                })
+            } else {
+                callback(usualErrors.never(stackinfo()))
+            }
+        })
     },
     addImage({ mapName, imageData }, callback) {
 

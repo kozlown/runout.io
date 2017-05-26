@@ -73,9 +73,15 @@ const mapModel = {
             })
             .then(hash => new Promise((resolve, reject) => {
                 const insertMapQuery = 'INSERT INTO map SET ?'
+                let mapDataString = ''
+                try {
+                    mapDataString = JSON.stringify(mapData)
+                } catch (error) {
+                    return reject({ error })
+                }
                 const insertMapValues = {
                     name: mapName,
-                    data: mapData,
+                    data: mapDataString,
                     password: hash,
                     private: isPrivate,
                     owner: userId
@@ -83,13 +89,64 @@ const mapModel = {
                 db.query(insertMapQuery, insertMapValues, (error) => {
                     if (error) {
                         reject({ error })
+                    } else {
+                        resolve({
+                            newMapResponse: 'ok'
+                        })
                     }
                 })
             }))
         })
     },
-    updateMap({ mapData, mapName, password }) {
-
+    updateMap({ mapData, mapName, userId }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        // check if the map exists
+        return mapModel.mapExists({ mapName })
+        // check the password for the map (if private)
+        .then((mapExists) => {
+            if (mapExists) {
+                return mapModel.checkOwner({ mapName, userId })
+            }
+            return new Promise((resolve, reject) => reject({
+                updateMapResponse: `The map '${mapName}' doesn't exist.`
+            }))
+        })
+        // update map if authorized
+        .then((passwordIsValid) => {
+            if (passwordIsValid) {
+                // check if the new mapData has a valid JSON format
+                let mapDataObject = ''
+                let mapDataString = ''
+                try {
+                    mapDataObject = JSON.parse(mapData)
+                    mapDataString = JSON.stringify(mapDataObject)
+                } catch (error) {
+                    return new Promise((resolve, reject) => {
+                        reject({
+                            error
+                        })
+                    })
+                }
+                // update the map
+                const updateMapQuery = 'UPDATE map SET data = ? WHERE name = ?'
+                return new Promise((resolve, reject) => {
+                    db.query(updateMapQuery, [mapDataString, mapName], (error) => {
+                        if (error) {
+                            return reject({ error })
+                        }
+                        return resolve({
+                            updateMapResponse: 'ok'
+                        })
+                    })
+                })
+            }
+            return new Promise((resolve, reject) => reject({
+                checkPasswordResponse: 'The provided password is invalid.'
+            }))
+        })
     },
     addImage({ mapName, imageData }) {
 

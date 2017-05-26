@@ -35,5 +35,13 @@ userRoute.post('/:name', (req, res) => {
         res.status(response.statusCode).json(response)
     })
 })
+userRoute.put('/:name', (req, res) => {
+    const mapData = req.query.data
+    const mapName = req.params.name
+    const userId = req.userId
+    mapController.updateMap({ mapName, mapData, userId }, (response) => {
+        res.status(response.statusCode).json(response)
+    })
+})
 
 export default userRoute
