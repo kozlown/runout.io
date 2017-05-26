@@ -59,6 +59,17 @@ const mapModel = {
                 })
             }
             return new Promise((resolve, reject) => {
+                if (_.isUndefined(password) && isPrivate) {
+                    return reject({
+                        newMapResponse: 'privateMapNeedPassword'
+                    })
+                }
+                if (_.isUndefined(isPrivate)) {
+                    isPrivate = false
+                }
+                if (_.isUndefined(password)) {
+                    return resolve('')
+                }
                 bcrypt.genSalt(10, (err, salt) => {
                     if (err) {
                         return reject({ error: err })
@@ -73,9 +84,14 @@ const mapModel = {
             })
             .then(hash => new Promise((resolve, reject) => {
                 const insertMapQuery = 'INSERT INTO map SET ?'
-                let mapDataString = ''
+                if (_.isUndefined(mapData)) {
+                    return reject({
+                        newMapResponse: 'NeedMapData'
+                    })
+                }
+                let mapDataString = null
                 try {
-                    mapDataString = JSON.stringify(mapData)
+                    mapDataString = JSON.stringify(JSON.parse(mapData))
                 } catch (error) {
                     return reject({ error })
                 }
@@ -118,17 +134,11 @@ const mapModel = {
         .then((passwordIsValid) => {
             if (passwordIsValid) {
                 // check if the new mapData has a valid JSON format
-                let mapDataObject = ''
-                let mapDataString = ''
+                let mapDataString = null
                 try {
-                    mapDataObject = JSON.parse(mapData)
-                    mapDataString = JSON.stringify(mapDataObject)
+                    mapDataString = JSON.stringify(JSON.parse(mapData))
                 } catch (error) {
-                    return new Promise((resolve, reject) => {
-                        reject({
-                            error
-                        })
-                    })
+                    return new Promise((resolve, reject) => reject({ error }))
                 }
                 // update the map
                 const updateMapQuery = 'UPDATE map SET data = ? WHERE name = ?'
@@ -209,6 +219,23 @@ const mapModel = {
                 } else {
                     resolve(false)
                 }
+            })
+        })
+    },
+    checkOwner({ mapName, userId }) {
+        const db = mysql.createConnection({
+            ...config.database,
+            debug: false
+        })
+        return new Promise((resolve, reject) => {
+            const checkOwnerQuery = 'SELECT * FROM map WHERE owner = ? AND name = ?'
+            db.query(checkOwnerQuery, [userId, mapName], (error, results) => {
+                if (error) {
+                    return reject({
+                        error
+                    })
+                }
+                return resolve(results.length > 0)
             })
         })
     }

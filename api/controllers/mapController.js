@@ -52,7 +52,7 @@ const mapController = {
             } else if (!_.isUndefined(error)) {
                 callback({
                     statusCode: 500,
-                    error
+                    error: error.toString()
                 })
             } else {
                 callback(usualErrors.never(stackinfo()))
@@ -76,7 +76,7 @@ const mapController = {
             } else if (!_.isUndefined(error)) {
                 callback({
                     statusCode: 500,
-                    error
+                    error: error.toString()
                 })
             } else {
                 callback(usualErrors.never(stackinfo()))
